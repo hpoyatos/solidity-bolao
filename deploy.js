@@ -3,7 +3,7 @@ const Web3 = require('web3');
 const { interface, bytecode } = require('./compile');
 
 const provider = new HDWalletProvider(
-  '',
+  '[words from Metamask wallet]',
   'https://rinkeby.infura.io/ZwevbRaJDOz0oPl0jWOQ'
 );
 const web3 = new Web3(provider);

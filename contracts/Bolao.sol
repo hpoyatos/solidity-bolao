@@ -5,7 +5,7 @@ contract Bolao {
     address private gerente;
     address[] private jogadores;
 
-    function contructor() public {
+    constructor() public {
         gerente = msg.sender;
     }
 
