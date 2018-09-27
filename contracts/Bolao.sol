@@ -5,7 +5,8 @@ contract Bolao {
     struct Jogador 
     {
 	    string nome;
-	    address carteira;
+	    uint32 saldo;
+	    uint8 apostas;
     }
     
     mapping(address => Jogador) public jogadoresInfo;
@@ -16,9 +17,16 @@ contract Bolao {
         gerente = msg.sender;
     }
 
-    function entrar(string pNome) public payable {
+    function entrar(string pNome, uint32 pSaldo) public payable {
         require(msg.value == 1 ether);
-	    jogadoresInfo[msg.sender] = Jogador({ nome: pNome, carteira: msg.sender });
+	    if (jogadoresInfo[msg.sender].isValue = false)
+	    {
+	    	jogadoresInfo[msg.sender] == Jogador({ nome: pNome, saldo: pSaldo, apostas: 1});
+	    }
+	    else
+	    {
+		jogadoresInfo[msg.sender].apostas++;
+ 	    }
 	    jogadores.push(msg.sender);
     }
 
@@ -33,9 +41,14 @@ contract Bolao {
         _;
     }
 
-   /* function getJogadores() public view returns (address[]) {
+    function getJogadores() public view returns (address[]) {
         return jogadores;
-    }*/
+    }
+
+    function getJogadorPorId(address id) public view returns(string, uint32, uint8){
+	return jogadoresInfo(id).nome, jogadoresInfo(id).saldo, jogadoresInfo(id).apostas;
+
+    }
 
     function getGerente() public view returns (address) {
         return gerente;
