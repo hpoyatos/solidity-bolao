@@ -1,38 +1,48 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 
 contract Bolao {
     struct Jogador 
     {
 	    string nome;
-	    uint32 saldo;
+	    uint256 saldo;
 	    uint8 apostas;
+	    bool isValue;
     }
+    
+    event ApostaEvent(
+        address indexed apostador,
+        uint8 apostas
+    );
     
     mapping(address => Jogador) public jogadoresInfo;
     address private gerente;
     address[] public jogadores;
+    address public ultimoGanhador;
 
     constructor() public {
         gerente = msg.sender;
     }
 
-    function entrar(string pNome, uint32 pSaldo) public payable {
+    function entrar(string pNome, uint256 pSaldo) public payable {
         require(msg.value == 1 ether);
-	    if (jogadoresInfo[msg.sender].isValue = false)
+	    if (jogadoresInfo[msg.sender].isValue == false)
 	    {
-	    	jogadoresInfo[msg.sender] == Jogador({ nome: pNome, saldo: pSaldo, apostas: 1});
+	    	jogadoresInfo[msg.sender] = Jogador({ nome: pNome, saldo: pSaldo, apostas: 1, isValue: true});
 	    }
 	    else
 	    {
-		jogadoresInfo[msg.sender].apostas++;
+		    jogadoresInfo[msg.sender].apostas = jogadoresInfo[msg.sender].apostas + 1;
  	    }
+ 	    jogadoresInfo[msg.sender].saldo = jogadoresInfo[msg.sender].saldo - msg.value;
 	    jogadores.push(msg.sender);
+	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].apostas);
     }
 
     function escolherGanhador() public restricted {
         uint index = randomico() % jogadores.length;
         jogadores[index].transfer(address(this).balance);
+        ultimoGanhador = jogadores[index];
         limpar();
     }
 
@@ -45,8 +55,8 @@ contract Bolao {
         return jogadores;
     }
 
-    function getJogadorPorId(address id) public view returns(string, uint32, uint8){
-	return jogadoresInfo(id).nome, jogadoresInfo(id).saldo, jogadoresInfo(id).apostas;
+    function getJogadorPorId(address id) public view returns(string, uint256, uint8){
+	return (jogadoresInfo[id].nome, jogadoresInfo[id].saldo, jogadoresInfo[id].apostas);
 
     }
 
