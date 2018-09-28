@@ -13,7 +13,8 @@ contract Bolao {
     event ApostaEvent(
         address indexed carteira,
         string nome,
-        uint8 apostas
+        uint8 apostas,
+        uint256 premio
     );
 
     event FimDeJogoEvent(
@@ -44,7 +45,7 @@ contract Bolao {
 		    jogadoresInfo[msg.sender].apostas = jogadoresInfo[msg.sender].apostas + 1;
  	    }
 	    apostas.push(msg.sender);
-	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].nome, jogadoresInfo[msg.sender].apostas);
+	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].nome, jogadoresInfo[msg.sender].apostas, address(this).balance);
     }
 
     function escolherGanhador() public restricted payable {
