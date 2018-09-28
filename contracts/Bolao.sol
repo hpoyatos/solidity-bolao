@@ -39,11 +39,12 @@ contract Bolao {
 	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].apostas);
     }
 
-    function escolherGanhador() public restricted {
+    function escolherGanhador() public restricted returns (string) {
         uint index = randomico() % jogadores.length;
         jogadores[index].transfer(address(this).balance);
         ultimoGanhador = jogadores[index];
         limpar();
+        return jogadoresInfo[ultimoGanhador].nome;
     }
 
     modifier restricted() {
