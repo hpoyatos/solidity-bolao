@@ -5,13 +5,21 @@ contract Bolao {
     struct Jogador
     {
 	    string nome;
+      address carteira;
 	    uint8 apostas;
 	    bool isValue;
     }
 
     event ApostaEvent(
-        address indexed apostador,
+        address indexed carteira,
+        string nome,
         uint8 apostas
+    );
+
+    event FimDeJogoEvent(
+        address indexed carteira,
+        string ganhador,
+        uint256 premio
     );
 
     mapping(address => Jogador) public jogadoresInfo;
@@ -28,7 +36,7 @@ contract Bolao {
         require(msg.value == 1 ether);
 	    if (jogadoresInfo[msg.sender].isValue == false)
 	    {
-	    	jogadoresInfo[msg.sender] = Jogador({ nome: pNome, apostas: 1, isValue: true});
+	    	jogadoresInfo[msg.sender] = Jogador({ nome: pNome, carteira: msg.sender, apostas: 1, isValue: true});
 	    	jogadores.push(msg.sender);
 	    }
 	    else
@@ -36,22 +44,16 @@ contract Bolao {
 		    jogadoresInfo[msg.sender].apostas = jogadoresInfo[msg.sender].apostas + 1;
  	    }
 	    apostas.push(msg.sender);
-	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].apostas);
+	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].nome, jogadoresInfo[msg.sender].apostas);
     }
 
-    function escolherGanhador() public restricted payable returns (string) {
+    function escolherGanhador() public restricted payable {
         uint index = randomico() % jogadores.length;
+        uint256 premio = address(this).balance;
         jogadores[index].transfer(address(this).balance);
         ultimoGanhador = jogadores[index];
         limpar();
-        if (jogadoresInfo[msg.sender].isValue == true)
-  	    {
-          return jogadoresInfo[ultimoGanhador].nome;
-        }
-        else
-        {
-          return "";
-        }
+        emit FimDeJogoEvent(jogadores[index], jogadoresInfo[jogadores[index]].nome, premio);
     }
 
     modifier restricted() {
