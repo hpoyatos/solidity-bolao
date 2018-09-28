@@ -6,14 +6,15 @@ contract Bolao {
     {
 	    string nome;
       address carteira;
-	    uint8 apostas;
+	    uint256 apostas;
 	    bool isValue;
     }
 
     event ApostaEvent(
         address indexed carteira,
         string nome,
-        uint8 apostas,
+        uint256 apostas,
+        uint256 apostasTotal,
         uint256 premio
     );
 
@@ -28,9 +29,11 @@ contract Bolao {
     address[] public jogadores;
     address[] public apostas;
     address public ultimoGanhador;
+    uint256 public numApostas;
 
     constructor() public {
         gerente = msg.sender;
+        numApostas = 0;
     }
 
     function entrar(string pNome) public payable {
@@ -45,7 +48,8 @@ contract Bolao {
 		    jogadoresInfo[msg.sender].apostas = jogadoresInfo[msg.sender].apostas + 1;
  	    }
 	    apostas.push(msg.sender);
-	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].nome, jogadoresInfo[msg.sender].apostas, address(this).balance);
+      numApostas++;
+	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].nome, jogadoresInfo[msg.sender].apostas, numApostas, address(this).balance);
     }
 
     function escolherGanhador() public restricted payable {
@@ -70,8 +74,8 @@ contract Bolao {
         return apostas;
     }
 
-    function getJogadorPorId(address id) public view returns(string, uint8){
-	    return (jogadoresInfo[id].nome, jogadoresInfo[id].apostas);
+    function getJogadorPorId(address id) public view returns(string, address, uint256){
+	    return (jogadoresInfo[id].nome, jogadoresInfo[id].carteira, jogadoresInfo[id].apostas);
     }
 
     function getGerente() public view returns (address) {
@@ -89,6 +93,7 @@ contract Bolao {
     function limpar() private {
         jogadores = new address[](0);
         apostas = new address[](0);
+        numApostas = 0;
     }
 
     function randomico() private view returns (uint) {
