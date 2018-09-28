@@ -5,7 +5,7 @@ contract Bolao {
     struct Jogador
     {
 	    string nome;
-      address carteira;
+        address carteira;
 	    uint256 apostas;
 	    bool isValue;
     }
@@ -28,12 +28,13 @@ contract Bolao {
     address private gerente;
     address[] public jogadores;
     address[] public apostas;
-    address public ultimoGanhador;
+    uint256 public premio;
     uint256 public numApostas;
 
     constructor() public {
         gerente = msg.sender;
         numApostas = 0;
+        premio = 0;
     }
 
     function entrar(string pNome) public payable {
@@ -48,17 +49,20 @@ contract Bolao {
 		    jogadoresInfo[msg.sender].apostas = jogadoresInfo[msg.sender].apostas + 1;
  	    }
 	    apostas.push(msg.sender);
-      numApostas++;
+        numApostas++;
+        premio = premio + msg.value;
 	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].nome, jogadoresInfo[msg.sender].apostas, numApostas, address(this).balance);
     }
 
-    function escolherGanhador() public restricted payable {
+    function escolherGanhador() public restricted {
         uint index = randomico() % jogadores.length;
-        uint256 premio = address(this).balance;
         jogadores[index].transfer(address(this).balance);
-        ultimoGanhador = jogadores[index];
-        limpar();
-        emit FimDeJogoEvent(jogadores[index], jogadoresInfo[jogadores[index]].nome, premio);
+
+        if (jogadoresInfo[jogadores[index]].isValue == true)
+	    {
+            emit FimDeJogoEvent(jogadores[index], jogadoresInfo[jogadores[index]].nome, premio);
+	    }
+	    limpar();
     }
 
     modifier restricted() {
@@ -82,10 +86,6 @@ contract Bolao {
         return gerente;
     }
 
-    function getUltimoGanhador() public view returns (address) {
-	return ultimoGanhador;
-    }
-
     function getSaldo() public view returns (uint256){
 	return address(this).balance;
     }
@@ -94,6 +94,7 @@ contract Bolao {
         jogadores = new address[](0);
         apostas = new address[](0);
         numApostas = 0;
+        premio = 0;
     }
 
     function randomico() private view returns (uint) {
