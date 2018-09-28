@@ -55,12 +55,12 @@ contract Bolao {
     }
 
     function escolherGanhador() public restricted {
-        uint index = randomico() % jogadores.length;
-        jogadores[index].transfer(address(this).balance);
+        uint index = randomico() % apostas.length;
+        apostas[index].transfer(address(this).balance);
 
-        if (jogadoresInfo[jogadores[index]].isValue == true)
+        if (jogadoresInfo[apostas[index]].isValue == true)
 	    {
-            emit FimDeJogoEvent(jogadores[index], jogadoresInfo[jogadores[index]].nome, premio);
+            emit FimDeJogoEvent(apostas[index], jogadoresInfo[apostas[index]].nome, premio);
 	    }
 	    limpar();
     }
@@ -91,6 +91,10 @@ contract Bolao {
     }
 
     function limpar() private {
+        for(uint i=0;i<jogadores.length;i++)
+        {
+            jogadoresInfo[jogadores[i]].isValue = false;
+        }
         jogadores = new address[](0);
         apostas = new address[](0);
         numApostas = 0;
