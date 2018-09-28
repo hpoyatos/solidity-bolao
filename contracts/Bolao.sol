@@ -44,7 +44,14 @@ contract Bolao {
         jogadores[index].transfer(address(this).balance);
         ultimoGanhador = jogadores[index];
         limpar();
-        return jogadoresInfo[ultimoGanhador].nome;
+        if (jogadoresInfo[msg.sender].isValue == true)
+  	    {
+          return jogadoresInfo[ultimoGanhador].nome;
+        }
+        else
+        {
+          return "";
+        }
     }
 
     modifier restricted() {
