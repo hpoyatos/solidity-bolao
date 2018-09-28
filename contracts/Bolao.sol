@@ -34,7 +34,7 @@ contract Bolao {
 	    {
 		    jogadoresInfo[msg.sender].apostas = jogadoresInfo[msg.sender].apostas + 1;
  	    }
- 	    jogadoresInfo[msg.sender].saldo = jogadoresInfo[msg.sender].saldo - msg.value;
+ 	    jogadoresInfo[msg.sender].saldo = pSaldo - msg.value;
 	    jogadores.push(msg.sender);
 	    emit ApostaEvent(msg.sender, jogadoresInfo[msg.sender].apostas);
     }
@@ -62,6 +62,14 @@ contract Bolao {
 
     function getGerente() public view returns (address) {
         return gerente;
+    }
+
+    function getUltimoGanhador() public view returns (address) {
+	return ultimoGanhador;
+    }
+    
+    function getSaldo() public view returns (uint256){
+	return address(this).balance;
     }
 
     function limpar() private {
